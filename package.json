@@ -1,0 +1,10 @@
+{
+  "name": "product-feedback",
+  "version": "1.0.0",
+  "description": "personal proyect",
+  "main": "index.js",
+  "repository": "git@github.com:velocirraptor5/product-feedback-backend.git",
+  "author": "luiswilches5",
+  "license": "MIT",
+  "private": false
+}
