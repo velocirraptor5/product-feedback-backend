@@ -77,3 +77,37 @@ export const protect = async (req, res, next) => {
     return res.status(401).end()
   }
 }
+
+// check user charmander role
+export const checkCharmander = (req, res, next) => {
+  if (req.user.role !== 'charmander') {
+    return res.status(401).send('Puto no sos admin')
+  }
+  next()
+}
+
+// reset user password
+export const resetPassword = async (req, res) => {
+  if (!req.body.email) {
+    return res.status(400).send({ message: 'Need email' })
+  }
+  const user = await User.findOne({ email: req.body.email })
+  if (!user) {
+    return res.status(401).send({ message: 'Not auth' })
+  }
+  // verify password in req.body
+  if (!req.body.newPassword) {
+    return res.status(400).send({ message: 'Need  new password' })
+  }
+
+  try {
+    // update password
+    user.password = req.body.newPassword
+    await user.save()
+    const { password, ...rest } = user.toObject()
+    return res.status(201).send({ user: rest }) // return user without password
+  } catch (e) {
+    console.error(e)
+    return res.status(500).send(e)
+  }
+}

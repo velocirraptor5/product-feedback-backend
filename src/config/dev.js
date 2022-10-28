@@ -1,6 +1,9 @@
+import * as dotenv from 'dotenv'
+dotenv.config();
+
 export const config = {
   secrets: {
-    jwt: 'learneverything'
+    jwt: process.env.JWT_SECRET
   },
-  dbUrl: 'mongodb://mongo_db/prodfeedback-dev'
+  dbUrl: process.env.DB_URL
 }
