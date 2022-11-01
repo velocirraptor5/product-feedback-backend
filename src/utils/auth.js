@@ -111,3 +111,21 @@ export const resetPassword = async (req, res) => {
     return res.status(500).send(e)
   }
 }
+
+// delete user
+export const deleteUser = async (req, res) => {
+  if (!req.body.email) {
+    return res.status(400).send({ message: 'Need email' })
+  }
+  const user = await User.findOne({ email: req.body.email })
+  if (!user) {
+    return res.status(401).send({ message: 'Not user with email' + req.body.email })
+  }
+  try {
+    await user.remove()
+    return res.status(201).send({ message: 'User deleted' })
+  } catch (e) {
+    console.error(e)
+    return res.status(500).send(e)
+  }
+}

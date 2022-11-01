@@ -1,3 +1,4 @@
+import { merge } from 'lodash'
 export const getOne = model => async (req, res) => {
   try {
     const doc = await model
@@ -43,13 +44,21 @@ export const createOne = model => async (req, res) => {
 
 export const updateOne = model => async (req, res) => {
   try {
+    // get doc thats being updated
+    const doc = await model
+      .findOne({ createdBy: req.user._id, _id: req.params.id })
+      .lean()
+      .exec()
+
+    const newDoc = merge(doc, req.body)
+
     const updatedDoc = await model
       .findOneAndUpdate(
         {
           createdBy: req.user._id,
           _id: req.params.id
         },
-        req.body,
+        newDoc,
         { new: true }
       )
       .lean()

@@ -7,7 +7,9 @@ import { connect } from './utils/db'
 import userRouter from './resources/user/user.router'
 import itemRouter from './resources/item/item.router'
 import listRouter from './resources/list/list.router'
-import { signin, signup, protect, checkCharmander, resetPassword } from './utils/auth'  // <--- import auth functions
+import productFbkRouter from './resources/productFbk/productFbk.router'
+import commentRouter from './resources/comment/comment.router'
+import { signin, signup, protect, checkCharmander, resetPassword, deleteUser } from './utils/auth'  // <--- import auth functions
 
 export const app = express()
 
@@ -25,9 +27,14 @@ app.use('/api', protect)  // <--- protect all routes below
 app.use('/api/user', userRouter)
 app.use('/api/item', itemRouter)
 app.use('/api/list', listRouter)
+app.use('/api/product', productFbkRouter)
+app.use('/api/comment', commentRouter)
 
 // reset password
 app.post('/api/reset-password', [checkCharmander, resetPassword])
+//delete user
+app.delete('/api/delete-user', [checkCharmander, deleteUser])
+
 
 export const start = async () => {
   try {

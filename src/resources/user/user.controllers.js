@@ -23,3 +23,21 @@ export const updateMe = async (req, res) => {
     res.status(400).end()
   }
 }
+
+//get user by id
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+      .lean()
+      .exec()
+
+    if (!user) {
+      return res.status(400).end()
+    }
+
+    res.status(200).json({ data: user })
+  } catch (e) {
+    console.error(e)
+    res.status(400).end()
+  }
+}
