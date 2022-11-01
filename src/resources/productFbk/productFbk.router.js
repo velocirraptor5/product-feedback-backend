@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import controllers from './productFbk.controllers'
+import controllers, { setId } from './productFbk.controllers'
+
 
 const router = Router()
 
@@ -12,6 +13,7 @@ router
 // /api/product/:id
 router
   .route('/:id')
+  .all(setId)
   .get(controllers.getOne)
   .put(controllers.updateOne)
   .delete(controllers.removeOne)

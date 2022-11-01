@@ -1,6 +1,7 @@
 import { merge } from 'lodash'
 export const getOne = model => async (req, res) => {
   try {
+    console.log("req.params.id", req.params.id);
     const doc = await model
       .findOne({ createdBy: req.user._id, _id: req.params.id })
       .lean()
@@ -77,6 +78,8 @@ export const updateOne = model => async (req, res) => {
 
 export const removeOne = model => async (req, res) => {
   try {
+    console.log("req.params.id");
+    console.log(req.params.id);
     const removed = await model.findOneAndRemove({
       createdBy: req.user._id,
       _id: req.params.id

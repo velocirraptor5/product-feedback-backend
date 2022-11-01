@@ -3,11 +3,12 @@ import { me, updateMe, getUser } from './user.controllers'
 
 const router = Router()
 
+// /api/user
 router.get('/', me)
 router.put('/', updateMe)
 
-// /api/user/:id
+// /api/user/:nikname
 router
-    .route('/:id')
+    .route('/:nikname')
     .get(getUser)
 export default router

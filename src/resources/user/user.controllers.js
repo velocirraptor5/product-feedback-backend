@@ -24,10 +24,10 @@ export const updateMe = async (req, res) => {
   }
 }
 
-//get user by id
+//get user by nikname
 export const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id)
+    const user = await User.findOne({ nikname: req.params.nikname })
       .lean()
       .exec()
 

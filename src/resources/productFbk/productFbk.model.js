@@ -2,6 +2,10 @@ import mongoose from 'mongoose'
 
 const productFbkSchema = new mongoose.Schema(
   {
+    seq: {
+      type: Number,
+      default: 0
+    },
     name: {
       type: String,
       required: true,
@@ -43,5 +47,22 @@ const productFbkSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
+// increment seq on new productFbk
+productFbkSchema.pre('save', function (next) {
+  if (!this.isNew) {
+    return next()
+  }
+  // get last seq
+  this.constructor.findOne()
+    .sort({ seq: -1 })
+    .exec((err, doc) => {
+      if (err) {
+        return next(err)
+      }
+      // set seq to last seq + 1
+      this.seq = doc ? doc.seq + 1 : 1
+      next()
+    })
+})
 
 export const ProductFbk = mongoose.model('productFbk', productFbkSchema)
