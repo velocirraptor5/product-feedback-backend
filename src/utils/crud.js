@@ -1,14 +1,12 @@
-import { merge } from 'lodash'
 export const getOne = model => async (req, res) => {
   try {
-    console.log("req.params.id", req.params.id);
     const doc = await model
-      .findOne({ createdBy: req.user._id, _id: req.params.id })
+      .findOne({ _id: req.params.id })
       .lean()
       .exec()
 
     if (!doc) {
-      return res.status(400).end()
+      return res.status(400).send("User doesn't have a document with id: " + req.params.id)
     }
 
     res.status(200).json({ data: doc })
@@ -21,7 +19,7 @@ export const getOne = model => async (req, res) => {
 export const getMany = model => async (req, res) => {
   try {
     const docs = await model
-      .find({ createdBy: req.user._id })
+      .find({})
       .lean()
       .exec()
 
@@ -39,34 +37,25 @@ export const createOne = model => async (req, res) => {
     res.status(201).json({ data: doc })
   } catch (e) {
     console.error(e)
-    res.status(400).end()
+    res.status(400).send(e.message)
   }
 }
 
 export const updateOne = model => async (req, res) => {
   try {
-    // get doc thats being updated
-    const doc = await model
-      .findOne({ createdBy: req.user._id, _id: req.params.id })
-      .lean()
-      .exec()
-
-    const newDoc = merge(doc, req.body)
-
     const updatedDoc = await model
       .findOneAndUpdate(
         {
-          createdBy: req.user._id,
           _id: req.params.id
         },
-        newDoc,
+        req.body,
         { new: true }
       )
       .lean()
       .exec()
 
     if (!updatedDoc) {
-      return res.status(400).end()
+      return res.status(400).send("User doesn't have a document with id: " + req.params.id)
     }
 
     res.status(200).json({ data: updatedDoc })
@@ -78,21 +67,19 @@ export const updateOne = model => async (req, res) => {
 
 export const removeOne = model => async (req, res) => {
   try {
-    console.log("req.params.id");
-    console.log(req.params.id);
     const removed = await model.findOneAndRemove({
       createdBy: req.user._id,
       _id: req.params.id
     })
 
     if (!removed) {
-      return res.status(400).end()
+      return res.status(400).send("User doesn't have a document with id: " + req.params.id)
     }
 
     return res.status(200).json({ data: removed })
   } catch (e) {
     console.error(e)
-    res.status(400).end()
+    res.status(400).send(e.message)
   }
 }
 

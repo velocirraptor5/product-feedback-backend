@@ -6,7 +6,7 @@ const productFbkSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
-    name: {
+    title: {
       type: String,
       required: true,
       trim: true,
@@ -63,6 +63,56 @@ productFbkSchema.pre('save', function (next) {
       this.seq = doc ? doc.seq + 1 : 1
       next()
     })
+})
+
+// delete all comments and replies when productFbk is deleted
+productFbkSchema.post('findOneAndRemove', (productFbk, next) => {
+  // get all comments
+  mongoose.model('comment').find({ productFbk: productFbk._id }, (err, comments) => {
+    if (err) {
+      return next(err)
+    }
+
+    // function to delete all comments replies
+    const deleteReplies = (comment, cb) => {
+      // get all replies
+      mongoose.model('comment').find({ repliesTo: comment._id }, (err, replies) => {
+        if (err) {
+          return cb(err)
+        }
+        // delete all replies
+        mongoose.model('comment').deleteMany({ repliesTo: comment._id }, (err, result) => {
+          if (err) {
+            return cb(err)
+          }
+          // if there are replies, delete their replies
+          if (replies.length) {
+            replies.forEach(reply => {
+              deleteReplies(reply, cb)
+            })
+          }
+          cb()
+        })
+      })
+    }
+    // delete all comments replies
+    comments.forEach(comment => {
+      deleteReplies(comment, err => {
+        if (err) {
+          return next(err)
+        }
+      })
+    })
+
+
+    // delete all comments
+    mongoose.model('comment').deleteMany({ productFbk: productFbk._id }, (err, res) => {
+      if (err) {
+        return next(err)
+      }
+    })
+  })
+  next()
 })
 
 export const ProductFbk = mongoose.model('productFbk', productFbkSchema)

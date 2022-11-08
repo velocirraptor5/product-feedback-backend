@@ -5,18 +5,16 @@ import { ProductFbk } from './productFbk.model'
 export const setId = async (req, res, next) => {
     try {
         // get doc thats being requested
-        console.log("req.params.id in controller", req.params.id);
         const doc = await ProductFbk
             .findOne({ seq: req.params.id })
             .lean()
             .exec()
 
         if (!doc) {
-            return res.status(400).send("No productFbk found with that seq")
+            return res.status(400).send("No productFbk found with id: " + req.params.id)
         }
 
         req.params.id = doc._id
-        console.log("req.params.id in controller", req.params.id);
         next()
 
     } catch (e) {
